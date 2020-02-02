@@ -9,25 +9,43 @@ namespace ConsoleAdventure.Project.Controllers
   public class GameController : IGameController
   {
     private GameService _gameService = new GameService();
-    private Game _game = new Game();
 
     private bool _playing = true;
 
-    //NOTE Makes sure everything is called to finish Setup and Starts the Game loop
     public void Run()
     {
       Console.Clear();
+
+
+      string title = @"
+ ______   _______ __   __ _______ _______ ______   _______ _______ ___       _______ _______ _______ _______ _______   ___ __    _ __   __ _______ ______  _______ ______   
+|    _ | |       |  | |  |       |   _   |    _ | |       |   _   |   |     |       |       |   _   |       |       | |   |  |  | |  | |  |   _   |      ||       |    _ |  
+|   | || |    ___|  |_|  |    ___|  |_|  |   | || |  _____|  |_|  |   |     |  _____|    _  |  |_|  |       |    ___| |   |   |_| |  |_|  |  |_|  |  _    |    ___|   | ||  
+|   |_||_|   |___|       |   |___|       |   |_||_| |_____|       |   |     | |_____|   |_| |       |       |   |___  |   |       |       |       | | |   |   |___|   |_||_ 
+|    __  |    ___|       |    ___|       |    __  |_____  |       |   |___  |_____  |    ___|       |      _|    ___| |   |  _    |       |       | |_|   |    ___|    __  |
+|   |  | |   |___|   _   |   |___|   _   |   |  | |_____| |   _   |       |  _____| |   |   |   _   |     |_|   |___  |   | | |   ||     ||   _   |       |   |___|   |  | |
+|___|  |_|_______|__| |__|_______|__| |__|___|  |_|_______|__| |__|_______| |_______|___|   |__| |__|_______|_______| |___|_|  |__| |___| |__| |__|______||_______|___|  |_|
+";
+      Console.WriteLine(title);
       Console.WriteLine("What is your name, rogue musician?");
       string name = Console.ReadLine();
       _gameService.Setup(name);
       Console.Clear();
-      Console.WriteLine($"~~~~ Welcome To The Rehearsal Space {name} ~~~\n");
-      Console.WriteLine("Enter HELP to see a list of Commands\n");
       _gameService.PrintMenu();
 
 
       while (_gameService._playing)
       {
+        // Console.Clear();
+        Console.WriteLine(title);
+        Console.WriteLine("Player: " + name);
+
+        Console.WriteLine("Enter HELP to see a list of Commands\n");
+        Console.WriteLine("---------------------------------------");
+
+        Console.WriteLine("");
+        Console.WriteLine("");
+
         Print();
         GetUserInput();
       }
@@ -36,7 +54,6 @@ namespace ConsoleAdventure.Project.Controllers
 
     }
 
-    //NOTE Gets the user input, calls the appropriate command, and passes on the option if needed.
     public void GetUserInput()
     {
       Console.WriteLine("");
@@ -79,9 +96,11 @@ namespace ConsoleAdventure.Project.Controllers
           }
           break;
         case "take":
+          Console.Clear();
           _gameService.TakeItem(option);
           break;
         case "look":
+          Console.Clear();
           _gameService.Look();
           break;
         case "use":
@@ -89,7 +108,6 @@ namespace ConsoleAdventure.Project.Controllers
           if (itemResult)
           {
             Console.Clear();
-            Print();
           }
           else if (!itemResult)
           {
@@ -123,20 +141,12 @@ namespace ConsoleAdventure.Project.Controllers
           _gameService.PrintMenu();
           break;
         default:
-          Console.WriteLine("That's not an option I recognize.");
+          Console.Clear();
+          _gameService.Messages.Add(new Message("That's not an option I recognize."));
           break;
       }
-
-
-
-
-
-      //NOTE this will take the user input and parse it into a command and option.
-      //IE: take silver key => command = "take" option = "silver key"
-
     }
 
-    //NOTE this should print your messages for the game.
     private void Print()
     {
       foreach (var message in _gameService.Messages)

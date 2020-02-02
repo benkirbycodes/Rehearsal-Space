@@ -10,6 +10,15 @@ namespace ConsoleAdventure.Project
     private IGame _game { get; set; }
     public bool _playing = true;
     public List<Message> Messages { get; set; }
+    string title = @"
+ ______   _______ __   __ _______ _______ ______   _______ _______ ___       _______ _______ _______ _______ _______   ___ __    _ __   __ _______ ______  _______ ______   
+|    _ | |       |  | |  |       |   _   |    _ | |       |   _   |   |     |       |       |   _   |       |       | |   |  |  | |  | |  |   _   |      ||       |    _ |  
+|   | || |    ___|  |_|  |    ___|  |_|  |   | || |  _____|  |_|  |   |     |  _____|    _  |  |_|  |       |    ___| |   |   |_| |  |_|  |  |_|  |  _    |    ___|   | ||  
+|   |_||_|   |___|       |   |___|       |   |_||_| |_____|       |   |     | |_____|   |_| |       |       |   |___  |   |       |       |       | | |   |   |___|   |_||_ 
+|    __  |    ___|       |    ___|       |    __  |_____  |       |   |___  |_____  |    ___|       |      _|    ___| |   |  _    |       |       | |_|   |    ___|    __  |
+|   |  | |   |___|   _   |   |___|   _   |   |  | |_____| |   _   |       |  _____| |   |   |   _   |     |_|   |___  |   | | |   ||     ||   _   |       |   |___|   |  | |
+|___|  |_|_______|__| |__|_______|__| |__|___|  |_|_______|__| |__|_______| |_______|___|   |__| |__|_______|_______| |___|_|  |__| |___| |__| |__|______||_______|___|  |_|
+";
     public GameService()
     {
       _game = new Game();
@@ -25,6 +34,7 @@ namespace ConsoleAdventure.Project
       }
       else if (_game.CurrentRoom.IsTrap)
       {
+        Messages.Add(new Message(title));
         Messages.Add(new Message(_game.CurrentRoom.BadOutcome));
         Messages.Add(new Message(""));
         Messages.Add(new Message("(Q)uit or press any key to play again"));
@@ -37,6 +47,7 @@ namespace ConsoleAdventure.Project
     public void Help()
     {
       Console.Clear();
+      Messages.Add(new Message(title));
       Messages.Add(new Message("---COMMANDS---\n"));
       Messages.Add(new Message("Go ----------- Move In A Direction"));
       Messages.Add(new Message("Check --------Check The Room for Items"));
@@ -50,15 +61,18 @@ namespace ConsoleAdventure.Project
 
 
     }
+
     public void Check()
     {
       Console.Clear();
 
       if (_game.CurrentRoom.Items.Count == 0)
       {
+        Messages.Add(new Message(title));
         Messages.Add(new Message("There are no items in this room"));
         return;
       }
+      Messages.Add(new Message(title));
       Messages.Add(new Message("--- ITEMS IN THIS ROOM---\n"));
       foreach (var item in _game.CurrentRoom.Items)
       {
@@ -76,9 +90,11 @@ namespace ConsoleAdventure.Project
 
       if (_game.CurrentPlayer.Inventory.Count == 0)
       {
+        Messages.Add(new Message(title));
         Messages.Add(new Message("You have nothing in your inventory"));
         return;
       }
+      Messages.Add(new Message(title));
       Messages.Add(new Message("--- INVENTORY ---\n"));
       foreach (var item in _game.CurrentPlayer.Inventory)
       {
@@ -100,9 +116,7 @@ namespace ConsoleAdventure.Project
     {
       _playing = false;
     }
-    ///<summary>
-    ///Restarts the game 
-    ///</summary>
+
     public void Reset()
     {
       _game.Setup();
@@ -113,7 +127,7 @@ namespace ConsoleAdventure.Project
       Player Player = new Player(playerName);
       _game.CurrentPlayer = Player;
     }
-    ///<summary>When taking an item be sure the item is in the current room before adding it to the player inventory, Also don't forget to remove the item from the room it was picked up in</summary>
+
     public void TakeItem(string itemName)
     {
       if (_game.CurrentRoom.Items.Count == 0)
@@ -132,25 +146,30 @@ namespace ConsoleAdventure.Project
         Messages.Add(new Message("No item by that name in this room\n"));
       }
     }
-    ///<summary>
-    ///No need to Pass a room since Items can only be used in the CurrentRoom
-    ///Make sure you validate the item is in the room or player inventory before
-    ///being able to use the item
-    ///</summary>
+
     public bool UseItem(string itemName)
     {
       if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && _game.CurrentRoom.IsTrap && itemName == _game.CurrentRoom.RelevantItem.Name.ToLower())
       {
-
+        Messages.Add(new Message(title));
         _game.CurrentRoom.IsTrap = false;
         var item = _game.CurrentPlayer.Inventory.Find(i => i.Name == itemName);
         _game.CurrentPlayer.Inventory.Remove(item);
         Messages.Add(new Message(_game.CurrentRoom.GoodOutcome));
+        if (_game.CurrentRoom.LastRoom)
+        {
+          Messages.Add(new Message(""));
+          Messages.Add(new Message("(Q)uit or press any key to play again"));
+          _game.Setup();
+          return false;
+        }
         return true;
+
 
       }
       else if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && _game.CurrentRoom.IsTrap && itemName != _game.CurrentRoom.RelevantItem.Name.ToLower())
       {
+        Messages.Add(new Message(title));
         Messages.Add(new Message("oh no, That item doesn't seem to have any effect!"));
         Messages.Add(new Message(""));
         Messages.Add(new Message(_game.CurrentRoom.BadOutcome));
@@ -162,10 +181,13 @@ namespace ConsoleAdventure.Project
       else if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && !_game.CurrentRoom.IsTrap)
 
       {
-        Messages.Add(new Message("Maybe you should save that item, doeesn't seem to have much use in this room."));
+        Messages.Add(new Message(title));
+        Messages.Add(new Message("Maybe you should save that item, doesn't seem to have much use in this room."));
         return true;
       }
-      else Messages.Add(new Message("No item by that name in your Inventory."));
+      else
+        Messages.Add(new Message(title));
+      Messages.Add(new Message("No item by that name in your Inventory."));
       return true;
     }
 

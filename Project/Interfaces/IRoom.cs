@@ -13,6 +13,6 @@ namespace ConsoleAdventure.Project.Interfaces
     string BadOutcome { get; set; }
     string GoodOutcome { get; set; }
     Item RelevantItem { get; set; }
-
+    bool LastRoom { get; set; }
   }
 }

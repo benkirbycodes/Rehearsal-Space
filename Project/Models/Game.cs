@@ -10,7 +10,6 @@ namespace ConsoleAdventure.Project.Models
     public IPlayer CurrentPlayer { get; set; }
 
 
-    //NOTE Make yo rooms here...
     public void Setup()
     {
       Room StartingRoom = new Room("Starting Room", "You enter a bare concrete room.\nEvery wall is covered in spray-paint, a thousand reminders of a thousand bands long dead.\nA heavy steel door stands open, leading to a hallway beyond.\nA small table sits in a corner by the door.");
@@ -63,6 +62,13 @@ namespace ConsoleAdventure.Project.Models
       MetalRoom.Items.Add(SmokeBomb);
       SongwriterRoom.Items.Add(Beers);
       SongwriterRoom.Items.Add(HisDemo);
+
+      StartingRoom.LastRoom = false;
+      Hallway.LastRoom = false;
+      SongwriterRoom.LastRoom = false;
+      MetalRoom.LastRoom = false;
+      CoolJamsRoom.LastRoom = true;
+
 
       CurrentRoom = StartingRoom;
 

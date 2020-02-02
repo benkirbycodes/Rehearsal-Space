@@ -13,6 +13,7 @@ namespace ConsoleAdventure.Project.Models
     public string GoodOutcome { get; set; }
     public bool IsTrap { get; set; }
     public Item RelevantItem { get; set; }
+    public bool LastRoom { get; set; }
 
 
     public Room(string name, string desc)
