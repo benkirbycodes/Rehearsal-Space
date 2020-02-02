@@ -8,9 +8,13 @@ namespace ConsoleAdventure
   {
     public static void Main(string[] args)
     {
+
       Console.Clear();
+
       GameController gc = new GameController();
       gc.Run();
+
     }
   }
 }
+

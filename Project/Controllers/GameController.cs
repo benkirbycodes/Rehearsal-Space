@@ -9,6 +9,7 @@ namespace ConsoleAdventure.Project.Controllers
   public class GameController : IGameController
   {
     private GameService _gameService = new GameService();
+    private Game _game = new Game();
 
     private bool _playing = true;
 
@@ -59,8 +60,23 @@ namespace ConsoleAdventure.Project.Controllers
           _gameService.Quit();
           break;
         case "go":
-          _gameService.Go(option);
-          Console.Clear();
+          bool result = _gameService.Go(option);
+          if (result)
+          {
+            Console.Clear();
+          }
+          else if (!result)
+          {
+            Console.Clear();
+            Print();
+            string choice = Console.ReadLine().ToLower();
+            if (choice == "q")
+            {
+              _gameService.Quit();
+            }
+            else
+              Run();
+          }
           break;
         case "take":
           _gameService.TakeItem(option);
@@ -69,10 +85,28 @@ namespace ConsoleAdventure.Project.Controllers
           _gameService.Look();
           break;
         case "use":
-          _gameService.UseItem(option);
+          bool itemResult = _gameService.UseItem(option);
+          if (itemResult)
+          {
+            Console.Clear();
+            Print();
+          }
+          else if (!itemResult)
+          {
+            Console.Clear();
+            Print();
+            string itemChoice = Console.ReadLine().ToLower();
+            if (itemChoice == "q")
+            {
+              _gameService.Quit();
+            }
+            else
+              Run();
+          }
           break;
         case "reset":
           _gameService.Reset();
+          Run();
           break;
         case "check":
           _gameService.Check();

@@ -14,6 +14,5 @@ namespace ConsoleAdventure.Project.Interfaces
     string GoodOutcome { get; set; }
     Item RelevantItem { get; set; }
 
-    bool CheckIsTrap();
   }
 }

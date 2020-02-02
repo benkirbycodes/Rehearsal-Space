@@ -14,10 +14,7 @@ namespace ConsoleAdventure.Project.Models
     public bool IsTrap { get; set; }
     public Item RelevantItem { get; set; }
 
-    public bool CheckIsTrap()
-    {
-      return IsTrap;
-    }
+
     public Room(string name, string desc)
     {
       Name = name;

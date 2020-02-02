@@ -15,24 +15,24 @@ namespace ConsoleAdventure.Project
       _game = new Game();
       Messages = new List<Message>();
     }
-    public void Go(string direction)
+    public bool Go(string direction)
     {
-      if (_game.CurrentRoom.Exits.ContainsKey(direction))
+      if (_game.CurrentRoom.Exits.ContainsKey(direction) && !_game.CurrentRoom.IsTrap)
       {
-        if (_game.CurrentRoom.CheckIsTrap())
-        {
-          Messages.Add(new Message(_game.CurrentRoom.BadOutcome));
-          Messages.Add(new Message(""));
-          Messages.Add(new Message("Press Enter To Play Again?"));
-
-        }
         _game.CurrentRoom = _game.CurrentRoom.Exits[direction];
         PrintMenu();
-        return;
-
+        return true;
       }
-      Messages.Add(new Message("There's no door that direction\n"));
-
+      else if (_game.CurrentRoom.IsTrap)
+      {
+        Messages.Add(new Message(_game.CurrentRoom.BadOutcome));
+        Messages.Add(new Message(""));
+        Messages.Add(new Message("(Q)uit or press any key to play again"));
+        _game.Setup();
+        return false;
+      }
+      else Messages.Add(new Message("There's no door that direction\n"));
+      return true;
     }
     public void Help()
     {
@@ -104,8 +104,8 @@ namespace ConsoleAdventure.Project
     ///Restarts the game 
     ///</summary>
     public void Reset()
-    { ///TODO Doesn't work
-      _game = new Game();
+    {
+      _game.Setup();
     }
 
     public void Setup(string playerName)
@@ -137,21 +137,41 @@ namespace ConsoleAdventure.Project
     ///Make sure you validate the item is in the room or player inventory before
     ///being able to use the item
     ///</summary>
-    public void UseItem(string itemName)
+    public bool UseItem(string itemName)
     {
-      if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName))
+      if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && _game.CurrentRoom.IsTrap && itemName == _game.CurrentRoom.RelevantItem.Name.ToLower())
       {
-        if (_game.CurrentRoom.CheckIsTrap() && itemName == _game.CurrentRoom.RelevantItem.Name.ToLower())
-        {
-          _game.CurrentRoom.IsTrap = false;
-          var item = _game.CurrentPlayer.Inventory.Find(i => i.Name == itemName);
-          _game.CurrentPlayer.Inventory.Remove(item);
-          Messages.Add(new Message(_game.CurrentRoom.GoodOutcome));
-          return;
 
-        }
+        _game.CurrentRoom.IsTrap = false;
+        var item = _game.CurrentPlayer.Inventory.Find(i => i.Name == itemName);
+        _game.CurrentPlayer.Inventory.Remove(item);
+        Messages.Add(new Message(_game.CurrentRoom.GoodOutcome));
+        return true;
+
       }
+      else if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && _game.CurrentRoom.IsTrap && itemName != _game.CurrentRoom.RelevantItem.Name.ToLower())
+      {
+        Messages.Add(new Message("oh no, That item doesn't seem to have any effect!"));
+        Messages.Add(new Message(""));
+        Messages.Add(new Message(_game.CurrentRoom.BadOutcome));
+        Messages.Add(new Message(""));
+        Messages.Add(new Message("(Q)uit or press any key to play again"));
+        _game.Setup();
+        return false;
+      }
+      else if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && !_game.CurrentRoom.IsTrap)
+
+      {
+        Messages.Add(new Message("Maybe you should save that item, doeesn't seem to have much use in this room."));
+        return true;
+      }
+      else Messages.Add(new Message("No item by that name in your Inventory."));
+      return true;
     }
+
+
+
+
     public void PrintMenu()
     {
       Messages.Add(new Message(_game.CurrentRoom.Description));
@@ -159,4 +179,5 @@ namespace ConsoleAdventure.Project
 
     }
   }
+
 }
