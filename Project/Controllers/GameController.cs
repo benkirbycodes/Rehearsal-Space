@@ -50,7 +50,6 @@ namespace ConsoleAdventure.Project.Controllers
         GetUserInput();
       }
       Console.Clear();
-      Console.WriteLine("Smell ya later");
 
     }
 

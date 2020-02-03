@@ -50,12 +50,14 @@ namespace ConsoleAdventure.Project
       Messages.Add(new Message(title));
       Messages.Add(new Message("---COMMANDS---\n"));
       Messages.Add(new Message("Go ----------- Move In A Direction"));
-      Messages.Add(new Message("Check --------Check The Room for Items"));
+      Messages.Add(new Message("Check -------- Check The Room for Items"));
       Messages.Add(new Message("Take --------- Take an Item"));
       Messages.Add(new Message("Use ---------- Use an Item"));
       Messages.Add(new Message("Look --------- Look Around At The Room"));
       Messages.Add(new Message("Quit --------- Quit the Game"));
-      Messages.Add(new Message("Inventory ---- See your inventory\n"));
+      Messages.Add(new Message("Inventory ---- See your inventory"));
+      Messages.Add(new Message("Reset -------- Reset the Game\n"));
+
 
       Messages.Add(new Message("Press ENTER to return to Game"));
 
@@ -151,7 +153,6 @@ namespace ConsoleAdventure.Project
     {
       if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && _game.CurrentRoom.IsTrap && itemName == _game.CurrentRoom.RelevantItem.Name.ToLower())
       {
-        Messages.Add(new Message(title));
         _game.CurrentRoom.IsTrap = false;
         var item = _game.CurrentPlayer.Inventory.Find(i => i.Name == itemName);
         _game.CurrentPlayer.Inventory.Remove(item);
@@ -181,14 +182,13 @@ namespace ConsoleAdventure.Project
       else if (_game.CurrentPlayer.Inventory.Exists(i => i.Name.ToLower() == itemName) && !_game.CurrentRoom.IsTrap)
 
       {
-        Messages.Add(new Message(title));
         Messages.Add(new Message("Maybe you should save that item, doesn't seem to have much use in this room."));
         return true;
       }
       else
-        Messages.Add(new Message(title));
-      Messages.Add(new Message("No item by that name in your Inventory."));
+        Messages.Add(new Message("No item by that name in your Inventory."));
       return true;
+
     }
 
 
